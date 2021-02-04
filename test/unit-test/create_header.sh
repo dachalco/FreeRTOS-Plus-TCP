@@ -8,10 +8,12 @@ FILE=$1
 # Get all the locations of function definitions in the file
 #     Get the functions in tabular form.
 #     Get all the static ones.
+#     Ignore the casting functions
 #     Get all line numbers and ignore all else.
 #     Use grep once more to remove whitespace.
 TEMP=$(ctags -x --c-types=f ${FILE}  \
       | grep "static" \
+      | grep -v "ipDECL_CAST" \
       | grep -oh "[0-9]* " \
       | grep -o "[0-9]*")
 
@@ -48,4 +50,3 @@ do
          output=$?
     done;
 done;
-

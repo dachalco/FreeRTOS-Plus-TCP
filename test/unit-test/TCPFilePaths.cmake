@@ -21,3 +21,5 @@ set( TCP_INCLUDE_DIRS
      "${CMAKE_CURRENT_LIST_DIR}/../../portable/Compiler/MSVC"
      "${CMAKE_CURRENT_LIST_DIR}/stubs" )
 
+set( KERNEL_INCLUDE_DIRS
+     "${CMAKE_CURRENT_LIST_DIR}/../FreeRTOS-Kernel/include" )

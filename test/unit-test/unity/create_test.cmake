@@ -11,8 +11,8 @@ function(create_test test_name
     get_filename_component(test_src_absolute ${test_src} ABSOLUTE)
     add_custom_command(OUTPUT ${test_name}_runner.c
                   COMMAND ruby
-                    ${CMOCK_DIR}/vendor/unity/auto/generate_test_runner.rb
-                    ${MODULE_ROOT_DIR}/test/unit-test/cmock/project.yml
+                    ${UNITY_DIR}/auto/generate_test_runner.rb
+                    ${MODULE_ROOT_DIR}/test/unit-test/unity/project.yml
                     ${test_src_absolute}
                     ${test_name}_runner.c
                   DEPENDS ${test_src}
@@ -139,11 +139,9 @@ function(create_mock_list mock_name
     target_link_libraries(${mock_name} cmock unity)
 endfunction()
 
-
 function(create_real_library target
                              src_file
-                             real_include_list
-                             mock_name)
+                             real_include_list)
     add_library(${target} STATIC
             ${src_file}
         )
@@ -151,18 +149,12 @@ function(create_real_library target
             ${real_include_list}
         )
     set_target_properties(${target} PROPERTIES
-                COMPILE_FLAGS "-Wextra -Wpedantic \
-                    -fprofile-arcs -ftest-coverage -fprofile-generate \
-                    -Wno-unused-but-set-variable"
-                LINK_FLAGS "-fprofile-arcs -ftest-coverage \
-                    -fprofile-generate "
-                ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
-            )
-    if(NOT(mock_name STREQUAL ""))
-        add_dependencies(${target} ${mock_name})
-        target_link_libraries(${target}
-                        -l${mock_name}
-                        -lgcov
-                )
-    endif()
+            COMPILE_FLAGS "-Wextra -Wpedantic \
+                -fprofile-arcs -ftest-coverage -fprofile-generate \
+                -Wno-unused-but-set-variable"
+            LINK_FLAGS "-fprofile-arcs -ftest-coverage \
+                -fprofile-generate "
+            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
+        )
 endfunction()
+

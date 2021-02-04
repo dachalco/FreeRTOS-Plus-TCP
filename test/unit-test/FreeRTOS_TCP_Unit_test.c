@@ -8,15 +8,14 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "list.h"
+#include "catch_assert.h"
 
 /* Include header file(s) which have declaration
  * of functions under test */
 #include "FreeRTOS_IP.h"
-#include "mock_FreeRTOS_ARP.h"
+#include "FreeRTOS_ARP.h"
 #include "FreeRTOS_IP_Private.h"
-
 #include "FreeRTOSIPConfig.h"
-
 #include "FreeRTOS_ARP_stubs.c"
 
 #define ARPCacheEntryToCheck    2
@@ -71,7 +70,7 @@ void test_ulARPRemoveCacheEntryByMac_RemoveAbsentEntry( void )
 void test_ulARPRemoveCacheEntryByMac_UseNULLPointer( void )
 {
     /* We expect this test to call ASSERT. */
-    ulARPRemoveCacheEntryByMac( NULL );
+    catch_assert( ulARPRemoveCacheEntryByMac( NULL ) );
 }
 
 void test_eARPGetCacheEntryByMac_GetNormalEntry( void )
@@ -112,5 +111,5 @@ void test_eARPGetCacheEntryByMac_UseNULLPointer( void )
     MACAddress_t * const pxMACAddress = NULL;
 
     /* Expect this test to his an ASSERT. */
-    eARPGetCacheEntryByMac( pxMACAddress, ulIPPointer );
+    catch_assert( eARPGetCacheEntryByMac( pxMACAddress, ulIPPointer ) );
 }
