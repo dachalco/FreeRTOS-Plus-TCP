@@ -68,9 +68,6 @@ file( GLOB TCP_ANNEXED_SOURCES
 file( GLOB KERNEL_SOURCES
            ${MODULE_ROOT_DIR}/test/FreeRTOS-Kernel/*.c )
 
-#message(STATUS ${MODULE_ROOT_DIR}/test/FreeRTOS-Kernel/)
-#message(STATUS ${KERNEL_SOURCES})
-
 include( ${MODULE_ROOT_DIR}/test/unit-test/cmock_build.cmake )
 
 # Check if the Unity source directory exists.
@@ -88,18 +85,32 @@ enable_testing()
 # Add function to enable Unity based tests and coverage.
 include( ${MODULE_ROOT_DIR}/test/unit-test/cmock/create_test.cmake )
 
-set( KERNEL_INCLUDE_DIRS ${MODULE_ROOT_DIR}/test/FreeRTOS-Kernel/include )
+# Add kernel sources to a list
+file( GLOB KERNEL_INCLUDES
+           ${MODULE_ROOT_DIR}/test/FreeRTOS-Kernel/include/*.h )
+
+# Copy all files into one.
+foreach( file ${KERNEL_INCLUDES} )
+
+    get_filename_component( Modified_file ${file} NAME_WLE )
+
+    # Remove "static" from the file and put it in a temporary
+    # file with modified name
+    execute_process( COMMAND sed "s/PRIVILEGED_FUNCTION//g;s/portDONT_DISCARD//g"
+                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                     INPUT_FILE ${file}
+                     OUTPUT_FILE ${ANNEXED_DIR}/${Modified_file}_annexed.h )
+endforeach()
+
+set( KERNEL_INCLUDE_DIRS ${ANNEXED_DIR} )
+#${MODULE_ROOT_DIR}/test/FreeRTOS-Kernel/include )
+#PRIVILEGED_FUNCTION
 
 list( APPEND real_include_dirs
              ${TCP_INCLUDE_DIRS}
              ${KERNEL_INCLUDE_DIRS}
+             ${MODULE_ROOT_DIR}/test/FreeRTOS-Kernel/include
              ${MODULE_ROOT_DIR}/test/unit-test/ConfigFiles )
-
-#list( APPEND real_source_dirs
-#             ${TCP_ANNEXED_SOURCES}
-#             ${KERNEL_SOURCES}
-#             ${MODULE_ROOT_DIR}/portable/BufferManagement/BufferAllocation_2.c
-#             ${MODULE_ROOT_DIR}/test/unit-test/stubs/FreeRTOS_ARP_stubs.c )
 
 # =============================  (end edit)  ===================================
 set( real_name "${project_name}_real" )
