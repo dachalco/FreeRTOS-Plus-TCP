@@ -948,6 +948,7 @@ BaseType_t FreeRTOS_NetworkDownFromISR( void )
  * @return If a buffer was created then the pointer to that buffer is returned,
  *         else a NULL pointer is returned.
  */
+
 void * FreeRTOS_GetUDPPayloadBuffer( size_t uxRequestedSizeBytes,
                                      TickType_t uxBlockTimeTicks )
 {

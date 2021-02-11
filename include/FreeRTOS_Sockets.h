@@ -433,11 +433,6 @@
                                     size_t uxOptionLength );
     BaseType_t FreeRTOS_closesocket( Socket_t xSocket );
 
-/* The following function header should be placed in FreeRTOS_DNS.h.
- * It is kept here because some applications  expect it in FreeRTOS_Sockets.h.*/
-    #ifndef __COVERITY__
-        uint32_t FreeRTOS_gethostbyname( const char * pcHostName );
-    #endif
 
     BaseType_t FreeRTOS_inet_pton( BaseType_t xAddressFamily,
                                    const char * pcSource,

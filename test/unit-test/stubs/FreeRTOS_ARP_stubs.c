@@ -1,6 +1,3 @@
-/* Include Unity header */
-#include <unity.h>
-
 /* Include standard libraries */
 #include <stdlib.h>
 #include <string.h>
@@ -12,6 +9,9 @@
 #include "FreeRTOS_IP.h"
 
 volatile BaseType_t xInsideInterrupt = pdFALSE;
+
+/* This value should be false for BufferAllocation_2.c */
+const BaseType_t xBufferAllocFixedSize = pdFALSE;
 
 size_t xPortGetMinimumEverFreeHeapSize( void )
 {

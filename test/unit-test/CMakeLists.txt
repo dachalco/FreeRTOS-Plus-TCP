@@ -15,71 +15,107 @@ if( ${PROJECT_SOURCE_DIR} STREQUAL ${PROJECT_BINARY_DIR} )
     message( FATAL_ERROR "In-source build is not allowed. Please build in a separate directory, such as ${PROJECT_SOURCE_DIR}/build." )
 endif()
 
+# =============  Define source path and related variables (edit)  ==============
 # Set global path variables.
 get_filename_component(__MODULE_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
-set(MODULE_ROOT_DIR ${__MODULE_ROOT_DIR} CACHE INTERNAL "FreeRTOS-Plus-TCP repository root.")
-
-# Configure options to always show in CMake GUI.
-option( BUILD_CLONE_SUBMODULES
-        "Set this to ON to automatically clone any required Git submodules. When OFF, submodules must be manually cloned."
-        ON )
-
-# Set output directories.
-set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
-set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
-
-# ===================================== Coverity Analysis Configuration =================================================
+set( MODULE_ROOT_DIR ${__MODULE_ROOT_DIR} CACHE INTERNAL "FreeRTOS-Plus-TCP repository root." )
 
 # Include filepaths for source and include.
 include( ${MODULE_ROOT_DIR}/test/unit-test/TCPFilePaths.cmake )
 
-# Target for Coverity analysis that builds the library.
-#add_library( coverity_analysis
-#             ${MQTT_SOURCES}
-#             ${MQTT_SERIALIZER_SOURCES} )
+set( UNITY_DIR ${MODULE_ROOT_DIR}/tools/CMock/vendor/unity )
 
-#  ====================================  Test Configuration ========================================
+# ====================  Define your project name (edit) ========================
+set( project_name "FreeRTOS_TCP" )
 
-# Define a CMock resource path.
-set( CMOCK_DIR ${MODULE_ROOT_DIR}/tools/CMock CACHE INTERNAL "CMock library source directory." )
+# =====================  Create your mock here  (edit)  ========================
 
-# Include CMock build configuration.
-include( cmock_build.cmake )
+# ================= Create the library under test here (edit) ==================
 
-# Check if the CMock source directory exists, and if not present, clone the submodule
-# if BUILD_CLONE_SUBMODULES configuration is enabled.
-if( NOT EXISTS ${CMOCK_DIR}/src )
-    # Attempt to clone CMock.
-    if( ${BUILD_CLONE_SUBMODULES} )
-        clone_cmock()
-    else()
-        message( FATAL_ERROR "The required submodule CMock does not exist. Either clone it manually, or set BUILD_CLONE_SUBMODULES to 'ON' to automatically clone it during build." )
-    endif()
+# Base directories for temporary files
+set( ANNEXED_DIR ${CMAKE_BINARY_DIR}/${project_name}_Annexed )
+
+# Create the directory
+execute_process( COMMAND mkdir ${ANNEXED_DIR} )
+
+# Copy all files into one.
+foreach( file ${TCP_SOURCES} )
+
+    # Get all static function declarations in a header file (See the shell script)
+    execute_process( COMMAND /bin/sh ${CMAKE_BINARY_DIR}/../create_header.sh ${file} ${ANNEXED_DIR}/${project_name}_annex.h
+                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR} )
+
+    # Get only the filename without the extension and the path
+    get_filename_component( Modified_file ${file} NAME_WLE )
+
+    # Remove "static" from the file and put it in a temporary
+    # file with modified name
+    execute_process( COMMAND sed -E "/static portINLINE ipDECL_CAST_/! s/[_]?static/     /g"
+                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                     INPUT_FILE ${file}
+                     OUTPUT_FILE ${ANNEXED_DIR}/${Modified_file}_annexed.c )
+endforeach()
+
+# Add the annexed directory to the include directory
+list( APPEND TCP_INCLUDE_DIRS
+             ${ANNEXED_DIR} )
+
+# Add the annexed sources to a list
+file( GLOB TCP_ANNEXED_SOURCES
+           ${ANNEXED_DIR}/*.c )
+
+# Add kernel sources to a list
+file( GLOB KERNEL_SOURCES
+           ${MODULE_ROOT_DIR}/test/FreeRTOS-Kernel/*.c )
+
+#message(STATUS ${MODULE_ROOT_DIR}/test/FreeRTOS-Kernel/)
+#message(STATUS ${KERNEL_SOURCES})
+
+include( ${MODULE_ROOT_DIR}/test/unit-test/cmock_build.cmake )
+
+# Check if the Unity source directory exists.
+if( NOT EXISTS ${UNITY_DIR}/src )
+    message( FATAL_ERROR "Unity cannot be found in ${UNITY_DIR}. Was it submoduled?" )
 endif()
-
-
-# Add unit test and coverage configuration.
 
 # Use CTest utility for managing test runs. This has to be added BEFORE
 # defining test targets with add_test()
 enable_testing()
 
+# Add build targets for Unity and Unit, required for unit testing.
+#add_unity_targets()
+
+# Add function to enable Unity based tests and coverage.
+include( ${MODULE_ROOT_DIR}/test/unit-test/cmock/create_test.cmake )
+
+set( KERNEL_INCLUDE_DIRS ${MODULE_ROOT_DIR}/test/FreeRTOS-Kernel/include )
+
+list( APPEND real_include_dirs
+             ${TCP_INCLUDE_DIRS}
+             ${KERNEL_INCLUDE_DIRS}
+             ${MODULE_ROOT_DIR}/test/unit-test/ConfigFiles )
+
+#list( APPEND real_source_dirs
+#             ${TCP_ANNEXED_SOURCES}
+#             ${KERNEL_SOURCES}
+#             ${MODULE_ROOT_DIR}/portable/BufferManagement/BufferAllocation_2.c
+#             ${MODULE_ROOT_DIR}/test/unit-test/stubs/FreeRTOS_ARP_stubs.c )
+
+# =============================  (end edit)  ===================================
+set( real_name "${project_name}_real" )
+
+set(CMOCK_DIR ${MODULE_ROOT_DIR}/tools/CMock)
+
 # Add build targets for CMock and Unit, required for unit testing.
 add_cmock_targets()
 
-# Add function to enable CMock based tests and coverage.
-include( ${MODULE_ROOT_DIR}/test/unit-test/cmock/create_test.cmake )
-
-# Include unit-test build configuration
-include( unit_test_build.cmake )
-
-#  ==================================== Coverage Analysis configuration ========================================
+include(${MODULE_ROOT_DIR}/test/unit-test/ModuleCmake/IP_c_buld.cmake)
+create_ip_c_utest(FreeRTOS_IP)
 
 # Add a target for running coverage on tests.
 add_custom_target( coverage
-    COMMAND ${CMAKE_COMMAND} -P ${MODULE_ROOT_DIR}/test/unit-test/cmock/coverage.cmake
-    DEPENDS cmock unity FreeRTOS_TCP_Unit_test
+    COMMAND ${CMAKE_COMMAND} -DUNITY_DIR=${UNITY_DIR}
+    -P ${MODULE_ROOT_DIR}/test/unit-test/cmock/coverage.cmake
+    DEPENDS unity FreeRTOS_IP_utest
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
-

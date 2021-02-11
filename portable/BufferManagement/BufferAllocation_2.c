@@ -207,11 +207,14 @@ void vReleaseNetworkBuffer( uint8_t * pucEthernetBuffer )
 }
 /*-----------------------------------------------------------*/
 
+#include <assert.h>
 NetworkBufferDescriptor_t * pxGetNetworkBufferWithDescriptor( size_t xRequestedSizeBytes,
                                                               TickType_t xBlockTimeTicks )
 {
     NetworkBufferDescriptor_t * pxReturn = NULL;
     size_t uxCount;
+
+    //assert(1==0);
 
     if( xNetworkBufferSemaphore != NULL )
     {
