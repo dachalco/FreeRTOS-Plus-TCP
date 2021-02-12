@@ -4,11 +4,10 @@
 /* Include standard libraries */
 #include <stdlib.h>
 #include <string.h>
-
-/* FreeRTOS includes */
+#include <stdint.h>
 #include "FreeRTOS.h"
-#include "list.h"
 #include "task.h"
+#include "list.h"
 
 /* Include header file(s) which have declaration
  * of functions under test */
@@ -72,7 +71,7 @@ void test_ulARPRemoveCacheEntryByMac_RemoveAbsentEntry( void )
 void test_ulARPRemoveCacheEntryByMac_UseNULLPointer( void )
 {
     /* We expect this test to call ASSERT. */
-    ulARPRemoveCacheEntryByMac( NULL );
+    //ulARPRemoveCacheEntryByMac( NULL );
 }
 
 void test_eARPGetCacheEntryByMac_GetNormalEntry( void )
@@ -85,7 +84,7 @@ void test_eARPGetCacheEntryByMac_GetNormalEntry( void )
 
     FillARPCache();
 
-    xResult = eARPGetCacheEntryByMac( pxMACAddress, &ulIPPointer, NULL );
+    xResult = eARPGetCacheEntryByMac( pxMACAddress, &ulIPPointer );
 
     TEST_ASSERT_EQUAL( xResult, eARPCacheHit );
     TEST_ASSERT_EQUAL( ulIPPointer, ARPCacheEntryToCheck );
@@ -101,7 +100,7 @@ void test_eARPGetCacheEntryByMac_GetAbsentEntry( void )
 
     FillARPCache();
 
-    xResult = eARPGetCacheEntryByMac( pxMACAddress, &ulIPPointer, NULL );
+    xResult = eARPGetCacheEntryByMac( pxMACAddress, &ulIPPointer );
 
     TEST_ASSERT_EQUAL( xResult, eARPCacheMiss );
     TEST_ASSERT_EQUAL( ulIPPointer, 12345 );
@@ -113,5 +112,5 @@ void test_eARPGetCacheEntryByMac_UseNULLPointer( void )
     MACAddress_t * const pxMACAddress = NULL;
 
     /* Expect this test to his an ASSERT. */
-    eARPGetCacheEntryByMac( pxMACAddress, ulIPPointer, NULL );
+    //eARPGetCacheEntryByMac( pxMACAddress, ulIPPointer );
 }
