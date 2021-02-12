@@ -106,6 +106,27 @@ set( KERNEL_INCLUDE_DIRS ${ANNEXED_DIR} )
 #${MODULE_ROOT_DIR}/test/FreeRTOS-Kernel/include )
 #PRIVILEGED_FUNCTION
 
+# Create the directory
+execute_process( COMMAND mkdir ${ANNEXED_DIR}/TCP )
+
+file( GLOB TCP_INCLUDE_FILES
+           ${MODULE_ROOT_DIR}/include/*.h )
+
+# Copy all files into one.
+foreach( file ${TCP_INCLUDE_FILES} )
+
+    get_filename_component( Modified_file ${file} NAME_WLE )
+
+    # Remove "static" from the file and put it in a temporary
+    # file with modified name
+    execute_process( COMMAND sed -E "s/ipDECL_CAST_PTR_FUNC_FOR_TYPE\\( ([a-zA-Z_]*) \\)/\\1 * vCastPointerTo_\\1( void * pvArgument )/g"
+                     COMMAND sed -E "s/ipDECL_CAST_CONST_PTR_FUNC_FOR_TYPE\\( ([a-zA-Z_]*) \\)/const \\1 * vCastConstPointerTo_\\1( const void * pvArgument )/g"
+#                     COMMAND echo "Done?"
+                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                     INPUT_FILE ${file}
+                     OUTPUT_FILE ${ANNEXED_DIR}/TCP/${Modified_file}_annexed.h )
+endforeach()
+
 list( APPEND real_include_dirs
              ${TCP_INCLUDE_DIRS}
              ${KERNEL_INCLUDE_DIRS}

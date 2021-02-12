@@ -4,8 +4,9 @@ set(utest_module_name "FreeRTOS_IP")
 function(create_ip_c_utest target)
     # List the files required for the build
     list( APPEND real_source_dirs
-             ${TCP_ANNEXED_SOURCES}
-             ${MODULE_ROOT_DIR}/FreeRTOS_IP.c
+#             ${TCP_ANNEXED_SOURCES}
+             ${ANNEXED_DIR}/FreeRTOS_IP_annexed.c
+             ${ANNEXED_DIR}/FreeRTOS_ARP_annexed.c
              ${KERNEL_SOURCES}
              ${MODULE_ROOT_DIR}/test/unit-test/stubs/FreeRTOS_ARP_stubs.c )
 
@@ -24,6 +25,8 @@ function(create_ip_c_utest target)
                 "${MODULE_ROOT_DIR}/include/NetworkInterface.h"
                 "${MODULE_ROOT_DIR}/include/NetworkBufferManagement.h"
                 "${MODULE_ROOT_DIR}/include/FreeRTOS_DNS.h"
+                "${ANNEXED_DIR}/TCP/FreeRTOS_IP_Private_annexed.h"
+                "${ANNEXED_DIR}/TCP/FreeRTOS_TCP_IP_annexed.h"
 #               Kernel mocks
                 "${ANNEXED_DIR}/queue_annexed.h"
                 "${ANNEXED_DIR}/task_annexed.h"

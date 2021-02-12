@@ -28,6 +28,7 @@
 #include "mock_FreeRTOS_DNS.h"
 #include "mock_queue_annexed.h"
 #include "mock_NetworkBufferManagement.h"
+#include "mock_task_annexed.h"
 
 #include "/home/ubuntu/Desktop/CMockunittest/test/unit-test/build/FreeRTOS_TCP_Annexed/FreeRTOS_TCP_annex.h"
 
@@ -84,5 +85,9 @@ void test_FreeRTOS_GetAddressConfiguration( void )
 
 void test_prvProcessNetworkDownEvent( void )
 {
+    vTaskDelay_Ignore();
+    xTaskGetCurrentTaskHandle_IgnoreAndReturn( NULL );
+    xQueueGenericSend_IgnoreAndReturn(pdPASS);
+
     prvProcessNetworkDownEvent();
 }

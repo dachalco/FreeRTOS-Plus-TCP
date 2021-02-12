@@ -7,11 +7,30 @@
 #include "list.h"
 
 #include "FreeRTOS_IP.h"
+#include "FreeRTOS_IP_Private.h"
 
 volatile BaseType_t xInsideInterrupt = pdFALSE;
 
 /* This value should be false for BufferAllocation_2.c */
 const BaseType_t xBufferAllocFixedSize = pdFALSE;
+
+UDPPacketHeader_t xDefaultPartUDPPacketHeader =
+{
+    /* .ucBytes : */
+    {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  /* Ethernet source MAC address. */
+        0x08, 0x00,                          /* Ethernet frame type. */
+        0x45,                                /* ucVersionHeaderLength. */
+        0x00,                                /* ucDifferentiatedServicesCode. */
+        0x00, 0x00,                          /* usLength. */
+        0x00, 0x00,                          /* usIdentification. */
+        0x00, 0x00,                          /* usFragmentOffset. */
+        128,                                 /* ucTimeToLive */
+        17,                                  /* ucProtocol. */
+        0x00, 0x00,                          /* usHeaderChecksum. */
+        0x00, 0x00, 0x00, 0x00               /* Source IP address. */
+    }
+};
 
 size_t xPortGetMinimumEverFreeHeapSize( void )
 {
