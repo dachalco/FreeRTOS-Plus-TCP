@@ -45,6 +45,8 @@
     #define ipSIZE_OF_UDP_HEADER       8U
     #define ipSIZE_OF_TCP_HEADER       20U
 
+    #include "task.h"
+
 /* Application level configuration options. */
     #include "FreeRTOSIPConfig.h"
     #include "FreeRTOSIPConfigDefaults.h"
