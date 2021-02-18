@@ -1410,7 +1410,9 @@
 /**
  * @brief Create and send a DHCP discover packet through the DHCP socket.
  *
- * param[in] pxEndPoint: the end-point for which the discover message will be sent.
+ * @param[in] pxEndPoint: the end-point for which the discover message will be sent.
+ * 
+ * @return: pdTRUE if the DHCP discover message was sent successfully. Else a pdFALSE.
  */
     static BaseType_t prvSendDHCPDiscover( NetworkEndPoint_t * pxEndPoint )
     {
@@ -1445,12 +1447,16 @@
                                  &( xAddress ),
                                  sizeof( xAddress ) ) == 0 )
             {
+                FreeRTOS_debug_printf( ( "vDHCPProcess: discover send failed\n" ) );
+
                 /* The packet was not successfully queued for sending and must be
                  * returned to the stack. */
                 FreeRTOS_ReleaseUDPPayloadBuffer( pucUDPPayloadBuffer );
             }
-
-            xResult = pdTRUE;
+            else
+            {
+                xResult = pdTRUE;
+            }
         }
 
         return xResult;
