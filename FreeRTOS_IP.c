@@ -1143,8 +1143,13 @@ BaseType_t FreeRTOS_IPInit( const uint8_t ucIPAddress[ ipIP_ADDRESS_LENGTH_BYTES
 
     /* This function should only be called once. */
     configASSERT( xIPIsNetworkTaskReady() == pdFALSE );
+    FreeRTOS_printf( ( "1\r\n" ) );
+
     configASSERT( xNetworkEventQueue == NULL );
+    FreeRTOS_printf(("2\r\n"));
+    
     configASSERT( xIPTaskHandle == NULL );
+    FreeRTOS_printf( ( "3\r\n" ) );
 
     if( sizeof( uintptr_t ) == 8 )
     {
@@ -1152,6 +1157,7 @@ BaseType_t FreeRTOS_IPInit( const uint8_t ucIPAddress[ ipIP_ADDRESS_LENGTH_BYTES
          * pucEthernetBuffer to store a pointer. */
         configASSERT( ipconfigBUFFER_PADDING == 14 );
     }
+    FreeRTOS_printf( ( "4\r\n" ) );
 
     #ifndef _lint
         {
@@ -1168,6 +1174,7 @@ BaseType_t FreeRTOS_IPInit( const uint8_t ucIPAddress[ ipIP_ADDRESS_LENGTH_BYTES
     /* Attempt to create the queue used to communicate with the IP task. */
     xNetworkEventQueue = xQueueCreate( ipconfigEVENT_QUEUE_LENGTH, sizeof( IPStackEvent_t ) );
     configASSERT( xNetworkEventQueue != NULL );
+    FreeRTOS_printf( ( "5\r\n" ) );
 
     if( xNetworkEventQueue != NULL )
     {
@@ -1217,6 +1224,7 @@ BaseType_t FreeRTOS_IPInit( const uint8_t ucIPAddress[ ipIP_ADDRESS_LENGTH_BYTES
             /* Prepare the sockets interface. */
             vNetworkSocketsInit();
 
+            FreeRTOS_printf( ( "Creating IP task\r\n" ) );
             /* Create the task that processes Ethernet and stack events. */
             xReturn = xTaskCreate( prvIPTask,
                                    "IP-task",
