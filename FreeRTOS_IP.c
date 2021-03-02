@@ -435,19 +435,19 @@ static void prvIPTask( void * pvParameters )
 
         iptraceNETWORK_EVENT_RECEIVED( xReceivedEvent.eEventType );
 
-        FreeRTOS_printf( ( "The event received is: %d ", xReceivedEvent.eEventType ) );
+        //FreeRTOS_printf( ( "The event received is: %d ", xReceivedEvent.eEventType ) );
 
         switch( xReceivedEvent.eEventType )
         {
             case eNetworkDownEvent:
-                FreeRTOS_printf( ( "eNetworkDownEvent\n" ) );
+                //FreeRTOS_printf( ( "eNetworkDownEvent\n" ) );
                 /* Attempt to establish a connection. */
                 xNetworkUp = pdFALSE;
                 prvProcessNetworkDownEvent();
                 break;
 
             case eNetworkRxEvent:
-                FreeRTOS_printf( ( "eNetworkRxEvent\n" ) );
+                //FreeRTOS_printf( ( "eNetworkRxEvent\n" ) );
 
                 /* The network hardware driver has received a new packet.  A
                  * pointer to the received buffer is located in the pvData member
@@ -458,7 +458,7 @@ static void prvIPTask( void * pvParameters )
             case eNetworkTxEvent:
 
                {
-                FreeRTOS_printf(("eNetworkTxEvent\n"));
+                   //FreeRTOS_printf(("eNetworkTxEvent\n"));
 
                    NetworkBufferDescriptor_t * pxDescriptor = ipCAST_PTR_TO_TYPE_PTR( NetworkBufferDescriptor_t, xReceivedEvent.pvData );
 
@@ -471,13 +471,13 @@ static void prvIPTask( void * pvParameters )
                break;
 
             case eARPTimerEvent:
-                FreeRTOS_printf(("eARPTimerEvent\n"));
+                //FreeRTOS_printf(("eARPTimerEvent\n"));
                 /* The ARP timer has expired, process the ARP cache. */
                 vARPAgeCache();
                 break;
 
             case eSocketBindEvent:
-                FreeRTOS_printf(("eSocketBindEvent\n"));
+                //FreeRTOS_printf(("eSocketBindEvent\n"));
 
                 /* FreeRTOS_bind (a user API) wants the IP-task to bind a socket
                  * to a port. The port number is communicated in the socket field
@@ -498,7 +498,7 @@ static void prvIPTask( void * pvParameters )
                 break;
 
             case eSocketCloseEvent:
-                FreeRTOS_printf(("eSocketCloseEvent\n"));
+                //FreeRTOS_printf(("eSocketCloseEvent\n"));
 
                 /* The user API FreeRTOS_closesocket() has sent a message to the
                  * IP-task to actually close a socket. This is handled in
@@ -508,7 +508,7 @@ static void prvIPTask( void * pvParameters )
                 break;
 
             case eStackTxEvent:
-                FreeRTOS_printf(("eStackTxEvent\n"));
+                //FreeRTOS_printf(("eStackTxEvent\n"));
 
                 /* The network stack has generated a packet to send.  A
                  * pointer to the generated buffer is located in the pvData
@@ -517,7 +517,7 @@ static void prvIPTask( void * pvParameters )
                 break;
 
             case eDHCPEvent:
-                FreeRTOS_printf(("eDHCPEvent\n"));
+                //FreeRTOS_printf(("eDHCPEvent\n"));
                 /* The DHCP state machine needs processing. */
                 #if ( ipconfigUSE_DHCP == 1 )
                     {
@@ -535,7 +535,7 @@ static void prvIPTask( void * pvParameters )
                 break;
 
             case eSocketSelectEvent:
-                FreeRTOS_printf(("eSocketSelectEvent\n"));
+                //FreeRTOS_printf(("eSocketSelectEvent\n"));
 
                 /* FreeRTOS_select() has got unblocked by a socket event,
                  * vSocketSelect() will check which sockets actually have an event
@@ -556,7 +556,7 @@ static void prvIPTask( void * pvParameters )
                 break;
 
             case eSocketSignalEvent:
-                FreeRTOS_printf(("eSocketSignalEvent\n"));
+                //FreeRTOS_printf(("eSocketSignalEvent\n"));
                 #if ( ipconfigSUPPORT_SIGNALS != 0 )
 
                     /* Some task wants to signal the user of this socket in
@@ -566,7 +566,7 @@ static void prvIPTask( void * pvParameters )
                 break;
 
             case eTCPTimerEvent:
-                FreeRTOS_printf(("eTCPTimerEvent\n"));
+                //FreeRTOS_printf(("eTCPTimerEvent\n"));
                 #if ( ipconfigUSE_TCP == 1 )
 
                     /* Simply mark the TCP timer as expired so it gets processed
@@ -576,7 +576,7 @@ static void prvIPTask( void * pvParameters )
                 break;
 
             case eTCPAcceptEvent:
-                FreeRTOS_printf(("eTCPAcceptEvent\n"));
+                //FreeRTOS_printf(("eTCPAcceptEvent\n"));
 
                 /* The API FreeRTOS_accept() was called, the IP-task will now
                  * check if the listening socket (communicated in pvData) actually
@@ -593,7 +593,7 @@ static void prvIPTask( void * pvParameters )
                 break;
 
             case eTCPNetStat:
-                FreeRTOS_printf(("eTCPNetStat\n"));
+                //FreeRTOS_printf(("eTCPNetStat\n"));
 
                 /* FreeRTOS_netstat() was called to have the IP-task print an
                  * overview of all sockets and their connections */
@@ -603,12 +603,12 @@ static void prvIPTask( void * pvParameters )
                 break;
 
             case eNoEvent:
-                FreeRTOS_printf(("eNoEvent\n"));
+                //FreeRTOS_printf(("eNoEvent\n"));
                 /* xQueueReceive() returned because of a normal time-out. */
                 break;
 
             default:
-                FreeRTOS_printf(("default\n"));
+                //FreeRTOS_printf(("default\n"));
                 /* Should not get here. */
                 break;
         }
