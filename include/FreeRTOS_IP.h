@@ -278,6 +278,9 @@
     void FreeRTOS_OutputARPRequest( uint32_t ulIPAddress );
     BaseType_t FreeRTOS_IsNetworkUp( void );
 
+    /* Returns pdTRUE is this function is called from the IP-task */
+    BaseType_t xIsCallingFromIPTask( void );
+
     #if ( ipconfigCHECK_IP_QUEUE_SPACE != 0 )
         UBaseType_t uxGetMinimumIPQueueSpace( void );
     #endif

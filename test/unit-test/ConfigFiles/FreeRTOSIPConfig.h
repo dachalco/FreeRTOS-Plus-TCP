@@ -40,6 +40,8 @@
     #define FreeRTOS_debug_printf( X )    configPRINTF( X )
 #endif
 
+#define ipconfigBUFFER_PADDING 14
+
 /* Set to 1 to print out non debugging messages, for example the output of the
  * FreeRTOS_netstat() command, and ping replies.  If ipconfigHAS_PRINTF is set to 1
  * then FreeRTOS_printf should be set to the function used to print out the

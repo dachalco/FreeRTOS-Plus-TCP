@@ -309,14 +309,14 @@ NetworkAddressingParameters_t xDefaultAddressing = { 0, 0, 0, 0, 0 };
 /** @brief Used to ensure network down events cannot be missed when they cannot be
  * posted to the network event queue because the network event queue is already
  * full. */
-static volatile BaseType_t xNetworkDownEventPending = pdFALSE;
+_static volatile BaseType_t xNetworkDownEventPending = pdFALSE;
 
 /** @brief Stores the handle of the task that handles the stack.  The handle is used
  * (indirectly) by some utility function to determine if the utility function is
  * being called by a task (in which case it is ok to block) or by the IP task
  * itself (in which case it is not ok to block). */
 
-static TaskHandle_t xIPTaskHandle = NULL;
+_static TaskHandle_t xIPTaskHandle = NULL;
 
 #if ( ipconfigUSE_TCP != 0 )
 
@@ -350,7 +350,7 @@ static IPTimer_t xARPTimer;
 #endif
 
 /** @brief Set to pdTRUE when the IP task is ready to start processing packets. */
-static BaseType_t xIPTaskInitialised = pdFALSE;
+_static BaseType_t xIPTaskInitialised = pdFALSE;
 
 #if ( ipconfigCHECK_IP_QUEUE_SPACE != 0 )
     /** @brief Keep track of the lowest amount of space in 'xNetworkEventQueue'. */
@@ -1562,7 +1562,7 @@ eFrameProcessingResult_t eConsiderFrameForProcessing( const uint8_t * const pucE
     }
     else
     #if ( ipconfigUSE_LLMNR == 1 )
-        if( memcmp( xLLMNR_MacAdress.ucBytes, pxEthernetHeader->xDestinationAddress.ucBytes, sizeof( MACAddress_t ) ) == 0 )
+        if( memcmp( xLLMNR_MacAddress.ucBytes, pxEthernetHeader->xDestinationAddress.ucBytes, sizeof( MACAddress_t ) ) == 0 )
         {
             /* The packet is a request for LLMNR - process it. */
             eReturn = eProcessBuffer;

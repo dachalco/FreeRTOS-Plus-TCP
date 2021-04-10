@@ -235,7 +235,7 @@
 
     #if ( ipconfigUSE_LLMNR == 1 )
         /* The LLMNR MAC address is 01:00:5e:00:00:fc */
-        extern const MACAddress_t xLLMNR_MacAdress;
+        extern const MACAddress_t xLLMNR_MacAddress;
     #endif /* ipconfigUSE_LLMNR */
 
     #if ( ipconfigUSE_NBNS != 0 )

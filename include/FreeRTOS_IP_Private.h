@@ -887,9 +887,6 @@
                               enum eTCP_STATE eTCPState );
     #endif /* ipconfigUSE_TCP */
 
-/* Returns pdTRUE is this function is called from the IP-task */
-    BaseType_t xIsCallingFromIPTask( void );
-
     #if ( ipconfigSUPPORT_SELECT_FUNCTION == 1 )
 
 /** @brief Structure for event groups of the Socket Select functions */

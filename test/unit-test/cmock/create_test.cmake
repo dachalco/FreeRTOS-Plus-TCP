@@ -45,7 +45,7 @@ function(create_test test_name
         add_dependencies(${test_name} ${dependency})
         target_link_libraries(${test_name} ${dependency})
     endforeach()
-    target_link_libraries(${test_name} -lgcov unity)
+    target_link_libraries(${test_name} -lgcov unity -lpthread)
     target_link_directories(${test_name}  PUBLIC
                             ${CMAKE_CURRENT_BINARY_DIR}/lib
             )
