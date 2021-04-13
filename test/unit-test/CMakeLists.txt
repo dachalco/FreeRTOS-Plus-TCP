@@ -163,6 +163,6 @@ include( ${UNIT_TEST_DIR}/FreeRTOS_IP/ut.cmake )
 # Add a target for running coverage on tests.
 add_custom_target( coverage
     COMMAND ${CMAKE_COMMAND} -P ${MODULE_ROOT_DIR}/test/unit-test/cmock/coverage.cmake
-    DEPENDS cmock unity FreeRTOS_IP_utest #FreeRTOS_ARP_utest FreeRTOS_DHCP_utest FreeRTOS_DNS_utest FreeRTOS_IP_utest
+    DEPENDS cmock unity FreeRTOS_IP_utest #FreeRTOS_ARP_utest FreeRTOS_DHCP_utest FreeRTOS_DNS_utest
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )

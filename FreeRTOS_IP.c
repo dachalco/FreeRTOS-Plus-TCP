@@ -342,7 +342,7 @@ static IPTimer_t xARPTimer;
 #endif
 #if ( ipconfigUSE_TCP != 0 )
     /** @brief TCP timer, to check for timeouts, resends. */
-    static IPTimer_t xTCPTimer;
+    _static IPTimer_t xTCPTimer;
 #endif
 #if ( ipconfigDNS_USE_CALLBACKS != 0 )
     /** @brief DNS timer, to check for timeouts when looking-up a domain. */

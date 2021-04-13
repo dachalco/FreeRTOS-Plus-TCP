@@ -19,7 +19,7 @@ function(create_test test_name
         )
     add_executable(${test_name} ${test_src} ${test_name}_runner.c)
     set_target_properties(${test_name} PROPERTIES
-            COMPILE_FLAG "-O0 -ggdb"
+            COMPILE_FLAG "-O0 -ggdb3"
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
             INSTALL_RPATH_USE_LINK_PATH TRUE
             LINK_FLAGS " \
@@ -132,7 +132,7 @@ function(create_mock_list mock_name
     set_target_properties(${mock_name} PROPERTIES
                         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
                         POSITION_INDEPENDENT_CODE ON
-                        COMPILE_FLAG "-O0 -ggdb"
+                        COMPILE_FLAG "-O0 -ggdb3"
             )
     target_compile_definitions(${mock_name} PUBLIC
             ${mock_define_list}
@@ -155,7 +155,7 @@ function(create_real_library target
     set_target_properties(${target} PROPERTIES
                 COMPILE_FLAGS "-O0 -Wextra -Wpedantic \
                     -fprofile-arcs -ftest-coverage -fprofile-generate \
-                    -Wno-unused-but-set-variable -ggdb ${additional_compile_flags}"
+                    -Wno-unused-but-set-variable -ggdb3 ${additional_compile_flags}"
                 LINK_FLAGS "-fprofile-arcs -ftest-coverage \
                     -fprofile-generate "
                 ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib

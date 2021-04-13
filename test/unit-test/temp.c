@@ -274,3 +274,50 @@ void test_FreeRTOS_IPInit_FullSuccess( void )
     TEST_ASSERT_EQUAL( pdTRUE, xReturn );
     TEST_ASSERT_EQUAL( 0, *ipLOCAL_IP_ADDRESS_POINTER );
 }
+
+void test_FreeRTOS_IPInit_EmptyQueue( void )
+{
+    struct QueueDefinition xNetworkEventQueueLocal;
+
+    struct timespec ts;
+
+    ts.tv_sec = 5;
+
+    GET_THE_CONTROL_TO_LOOP_IN_PRV_IPTASK;
+
+    /***** prvCheckNetworkTimers *****/
+
+    /* This stub will return 0 at first but later will be used to exit
+     * out of the prvIPTask which is an infinite loop. */
+    uxQueueMessagesWaiting_Stub( EndFunctionStub );
+    {
+        /**** prvIPTimerCheck ****/
+        xTaskCheckForTimeOut_ExpectAnyArgsAndReturn( pdTRUE );
+        {
+            /***** prvIPTimerStart *****/
+            vTaskSetTimeOutState_ExpectAnyArgs();
+        }
+    }
+    /**** xTCPTimerCheck ****/
+    xTCPTimerCheck_ExpectAnyArgsAndReturn( 0 );
+    /***** prvIPTimerStart *****/
+    vTaskSetTimeOutState_ExpectAnyArgs();
+
+
+    xQueueReceive_ExpectAnyArgsAndReturn( pdFALSE );
+
+    /* Call the function under test. In this case, the function we
+     * are testing is the IP task. */
+    FreeRTOS_IPInit( ucIPAddress,
+                     ucNetMask,
+                     ucGatewayAddress,
+                     ucDNSServerAddress,
+                     ucMACAddress );
+
+
+    /* Wait for a max timeout of 5 seconds. If not finished in
+     * that time, then the test will fail. */
+    sem_timedwait( &sem, &ts );
+}
+
+
