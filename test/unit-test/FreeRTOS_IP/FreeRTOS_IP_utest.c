@@ -299,6 +299,7 @@ void test_pxDuplicateNetworkBufferWithDescriptor(void)
     
     uint8_t ucEthernetBuffer[1000], ucNewEthernetBuffer[uxNewLength];   
     memset(ucEthernetBuffer, 0xAB, sizeof(ucEthernetBuffer));
+    memset(ucNewEthernetBuffer, 0, sizeof(ucNewEthernetBuffer));
     
     xNetworkBuffer.pucEthernetBuffer = ucEthernetBuffer;
     xNewBuffer.pucEthernetBuffer = ucNewEthernetBuffer;
@@ -318,6 +319,37 @@ void test_pxDuplicateNetworkBufferWithDescriptor(void)
     TEST_ASSERT_EQUAL(xNetworkBuffer.ulIPAddress,xNewBuffer.ulIPAddress);
     TEST_ASSERT_EQUAL(xNetworkBuffer.usPort,xNewBuffer.usPort);
     TEST_ASSERT_EQUAL(xNetworkBuffer.usBoundPort,xNewBuffer.usBoundPort);
+    TEST_ASSERT_EQUAL_MEMORY( ucEthernetBuffer, ucNewEthernetBuffer, sizeof(ucEthernetBuffer) );
+}
+
+void test_pxDuplicateNetworkBufferWithDescriptor_SmallerLength(void)
+{
+    NetworkBufferDescriptor_t xNetworkBuffer, xNewBuffer, * pxTestBuffer;
+    const size_t uxNewLength = 500;
+    
+    uint8_t ucEthernetBuffer[1000], ucNewEthernetBuffer[uxNewLength];   
+    memset(ucEthernetBuffer, 0xAB, sizeof(ucEthernetBuffer));
+    memset(ucNewEthernetBuffer, 0, sizeof(ucNewEthernetBuffer));
+    
+    xNetworkBuffer.pucEthernetBuffer = ucEthernetBuffer;
+    xNewBuffer.pucEthernetBuffer = ucNewEthernetBuffer;
+    
+    xNetworkBuffer.xDataLength = sizeof(ucEthernetBuffer);
+    xNewBuffer.xDataLength = 0;
+    
+    xNetworkBuffer.ulIPAddress = 0xABCD1234;
+    xNetworkBuffer.usPort = 0xAF;
+    xNetworkBuffer.usBoundPort = 0xFA;
+    
+    pxGetNetworkBufferWithDescriptor_ExpectAndReturn(uxNewLength, 0, &xNewBuffer);
+    pxTestBuffer = pxDuplicateNetworkBufferWithDescriptor( &xNetworkBuffer,uxNewLength);
+    
+    TEST_ASSERT_EQUAL(&xNewBuffer,pxTestBuffer);
+    TEST_ASSERT_EQUAL(xNewBuffer.xDataLength, uxNewLength);
+    TEST_ASSERT_EQUAL(xNetworkBuffer.ulIPAddress,xNewBuffer.ulIPAddress);
+    TEST_ASSERT_EQUAL(xNetworkBuffer.usPort,xNewBuffer.usPort);
+    TEST_ASSERT_EQUAL(xNetworkBuffer.usBoundPort,xNewBuffer.usBoundPort);
+    TEST_ASSERT_EQUAL_MEMORY( ucEthernetBuffer, ucNewEthernetBuffer, sizeof(ucNewEthernetBuffer) );
 }
 
 void test_pxUDPPayloadBuffer_to_NetworkBuffer_NULLInput(void)
@@ -794,14 +826,17 @@ void test_FreeRTOS_SetAddressConfiguration_NoNULLs(void)
     TEST_ASSERT_EQUAL(ulDNSServerAddress,xNetworkAddressing.ulDNSServerAddress);
 }
 
-void test_FreeRTOS_SendPingRequest(void)
+void test_FreeRTOS_SendPingRequest_NotEnoughNetworkBuffers(void)
 {
     uint32_t ulIPAddress;
-    size_t uxNumberOfBytesToSend;
+    size_t uxNumberOfBytesToSend = 0;
     TickType_t uxBlockTimeTicks;
     BaseType_t xResult;
     
+    uxGetNumberOfFreeNetworkBuffers_ExpectAndReturn(2);
+    
     xResult = FreeRTOS_SendPingRequest(ulIPAddress, uxNumberOfBytesToSend, uxBlockTimeTicks);
+    TEST_ASSERT_EQUAL(pdFAIL,xResult);
 }
 
 

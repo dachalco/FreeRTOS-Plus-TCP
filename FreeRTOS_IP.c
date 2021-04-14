@@ -1009,6 +1009,7 @@ NetworkBufferDescriptor_t * pxDuplicateNetworkBufferWithDescriptor( const Networ
                                                                     size_t uxNewLength )
 {
     NetworkBufferDescriptor_t * pxNewBuffer;
+    size_t uxLengthToUse = uxNewLength;
 
     /* This function is only used when 'ipconfigZERO_COPY_TX_DRIVER' is set to 1.
      * The transmit routine wants to have ownership of the network buffer
@@ -1017,15 +1018,21 @@ NetworkBufferDescriptor_t * pxDuplicateNetworkBufferWithDescriptor( const Networ
 
     if( pxNewBuffer != NULL )
     {
-        /* Set the actual packet size in case a bigger buffer than requested
-         * was returned. */
-        pxNewBuffer->xDataLength = uxNewLength;
-
         /* Copy the original packet information. */
         pxNewBuffer->ulIPAddress = pxNetworkBuffer->ulIPAddress;
         pxNewBuffer->usPort = pxNetworkBuffer->usPort;
         pxNewBuffer->usBoundPort = pxNetworkBuffer->usBoundPort;
-        ( void ) memcpy( pxNewBuffer->pucEthernetBuffer, pxNetworkBuffer->pucEthernetBuffer, pxNetworkBuffer->xDataLength );
+
+        if( pxNetworkBuffer->xDataLength < uxLengthToUse )
+        {
+            uxLengthToUse = pxNetworkBuffer->xDataLength;
+        }
+
+        /* Set the actual packet size in case a bigger buffer than requested
+         * was returned. */
+        pxNewBuffer->xDataLength = uxNewLength;
+
+        ( void ) memcpy( pxNewBuffer->pucEthernetBuffer, pxNetworkBuffer->pucEthernetBuffer, uxLengthToUse );
     }
 
     return pxNewBuffer;
